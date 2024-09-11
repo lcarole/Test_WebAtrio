@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using System.Security.Cryptography;
 using Test_WebAtrio.DbContexts;
 
 var builder = WebApplication.CreateBuilder(args);

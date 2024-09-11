@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Test_WebAtrio.DTO;
-
-namespace Test_WebAtrio.Models;
+﻿namespace Test_WebAtrio.Models;
 
 public partial class PersonneEmployée
 {

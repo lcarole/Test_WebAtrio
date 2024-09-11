@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Test_WebAtrio.Models;
+﻿namespace Test_WebAtrio.Models;
 
 public partial class Emploi
 {

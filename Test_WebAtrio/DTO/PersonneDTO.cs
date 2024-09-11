@@ -1,6 +1,4 @@
-﻿using Test_WebAtrio.Models;
-
-namespace Test_WebAtrio.DTO
+﻿namespace Test_WebAtrio.DTO
 {
     public class PersonneDTO
     {
@@ -9,7 +7,5 @@ namespace Test_WebAtrio.DTO
         public string Prenom { get; set; } = null!;
 
         public DateTime DateDeNaissance { get; set; }
-
-        public PersonneDTO() { }
     }
 }
