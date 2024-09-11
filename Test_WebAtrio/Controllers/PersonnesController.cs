@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Test_WebAtrio.DbContexts;
+using Test_WebAtrio.DTO;
 using Test_WebAtrio.Models;
 
 namespace Test_WebAtrio.Controllers
@@ -21,24 +22,49 @@ namespace Test_WebAtrio.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Renvoie toute les personnes.
+        /// </summary>
+        /// <returns></returns>
         // GET: api/Personnes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Personne>>> GetPersonnes()
         {
-            Task < ActionResult < IEnumerable < Personne >>> task = GetPersonnesAsync();
             return await _context.Personnes.OrderBy(personne => personne.Nom).ThenBy(personne => personne.Prenom).ToListAsync();
         }
 
+        /// <summary>
+        /// Renvoie toutes les personnes ayant travaillé pour une entreprise donnée.
+        /// </summary>
+        /// <param name="idEmploi"></param>
+        /// <returns></returns>
+        //GET: api/Personnes/{idEmploi}
+        [HttpGet("Emploi/{idEmploi}")]
+        public async Task<ActionResult<IEnumerable<Personne>>> GetPersonnesByEmploi(int idEmploi)
+        {
+            return await _context.Personnes
+                .Where(personne => personne.PersonneEmployées.Any(personneEmployée => personneEmployée.EmploiId == idEmploi))
+                .OrderBy(personne => personne.Nom)
+                .ThenBy(personne => personne.Prenom)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Ajoute une nouvelle personne. La personne ajouter ne doit pas avoir plus de 150 ans
+        /// </summary>
+        /// <param name="personne"></param>
+        /// <returns></returns>
         // POST: api/Personnes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Personne>> AddPersonne(Personne personne)
+        public async Task<ActionResult<Personne>> PostPersonne(PersonneDTO personneDTO)
         {
-            //Vérifie que la personne à moins de 150 ans
-            if (personne.DateDeNaissance < DateTime.Now.AddYears(-150))
+            var personne = new Personne()
             {
-                return BadRequest("La personne à plus de 150 ans");
-            }
+                Nom = personneDTO.Nom,
+                Prenom = personneDTO.Prenom,
+                DateDeNaissance = personneDTO.DateDeNaissance
+            };
             _context.Personnes.Add(personne);
             await _context.SaveChangesAsync();
 

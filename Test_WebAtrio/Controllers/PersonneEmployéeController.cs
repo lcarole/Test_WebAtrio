@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Test_WebAtrio.DbContexts;
+using Test_WebAtrio.DTO;
 using Test_WebAtrio.Models;
 
 namespace Test_WebAtrio.Controllers
@@ -21,41 +22,48 @@ namespace Test_WebAtrio.Controllers
             _context = context;
         }
 
-        // GET: api/PersonneEmployée
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonneEmployée>>> GetPersonneEmployées()
-        {
-            return await _context.PersonneEmployées.ToListAsync();
-        }
-
-        // GET: api/PersonneEmployée/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PersonneEmployée>> GetPersonneEmployée(int id)
-        {
-            var personneEmployée = await _context.PersonneEmployées.FindAsync(id);
-
-            if (personneEmployée == null)
-            {
-                return NotFound();
-            }
-
-            return personneEmployée;
-        }
-
+        /// <summary>
+        /// Permet d'ajouter un emploi à une personne avec une date de début et de fin d'emploi. Pour le poste actuellement occupé, la date de fin n'est pas obligatoire. Une personne peut avoir plusieurs emplois aux dates qui se chevauchent.
+        /// </summary>
+        /// <param name="personneEmployéeDTO"></param>
+        /// <returns></returns>
         // POST: api/PersonneEmployée
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<PersonneEmployée>> PostPersonneEmployée(PersonneEmployée personneEmployée)
+        public async Task<ActionResult<PersonneEmployée>> PostPersonneEmployée(PersonneEmployéeDTO personneEmployéeDTO)
         {
-            _context.PersonneEmployées.Add(personneEmployée);
-            await _context.SaveChangesAsync();
+            var personneEmployee = new PersonneEmployée()
+            {
+                PersonneId = personneEmployéeDTO.PersonneId,
+                EmploiId = personneEmployéeDTO.EmploiId,
+                DateDebut = personneEmployéeDTO.DateDebut,
+                DateFin = personneEmployéeDTO.DateFin
+            };
 
-            return CreatedAtAction("GetPersonneEmployée", new { id = personneEmployée.PersonneEmployee }, personneEmployée);
+            _context.PersonneEmployées.Add(personneEmployee);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (PersonneEmployéeExists(personneEmployéeDTO.EmploiId, personneEmployee.PersonneId))
+                {
+                    return Conflict("L'employé pour ce poste a déja été insérée.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Created();
         }
 
-        private bool PersonneEmployéeExists(int id)
+        private bool PersonneEmployéeExists(int EmploiId, int personneId)
         {
-            return _context.PersonneEmployées.Any(e => e.PersonneEmployee == id);
+            return _context.PersonneEmployées.Any(e => e.EmploiId == EmploiId && e.PersonneId == personneId);
         }
     }
 }
