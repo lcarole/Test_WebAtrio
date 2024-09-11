@@ -17,6 +17,24 @@ namespace Test_WebAtrio.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Renvoie un emploi en fonction de son id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        // GET: api/Emplois/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Emploi>> GetEmploi(int id)
+        {
+            var emploi = await _context.Emplois.FindAsync(id);
+
+            if (emploi == null)
+            {
+                return NotFound();
+            }
+
+            return emploi;
+        }
         ///<summary>
         /// Renvoie tout les emplois
         /// </summary>
@@ -68,7 +86,7 @@ namespace Test_WebAtrio.Controllers
             _context.Emplois.Add(emploi);
             await _context.SaveChangesAsync();
 
-            return Created();
+            return CreatedAtAction("GetEmploi", new { id = emploi.EmploiId}, emploi);
         }
     }
 }

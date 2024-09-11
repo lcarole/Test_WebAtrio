@@ -18,6 +18,26 @@ namespace Test_WebAtrio.Controllers
         }
 
         /// <summary>
+        /// Renvoie une personne en fonction de son id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        // GET: api/Personnes/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Personne>> GetPersonne(int id)
+        {
+            var personne = await _context.Personnes.FindAsync(id);
+
+            if (personne == null)
+            {
+                return NotFound();
+            }
+
+            return personne;
+        }
+
+
+        /// <summary>
         /// Renvoie toute les personnes.
         /// </summary>
         /// <returns></returns>
