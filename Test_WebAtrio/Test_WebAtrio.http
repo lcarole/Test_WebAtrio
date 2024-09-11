@@ -1,0 +1,6 @@
+@Test_WebAtrio_HostAddress = http://localhost:5245
+
+GET {{Test_WebAtrio_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
